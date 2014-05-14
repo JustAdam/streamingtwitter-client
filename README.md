@@ -1,6 +1,8 @@
 Streamingtwitter package client example
 =======================================
 
+[![Build Status](https://travis-ci.org/JustAdam/streamingtwitter-client.svg?branch=master)](https://travis-ci.org/JustAdam/streamingtwitter-client)
+
 	$ go get github.com/garyburd/go-oauth/oauth
  	$ go get github.com/JustAdam/streamingtwitter
 
