@@ -57,7 +57,6 @@ func main() {
 	// Splash screen ...
 	ticker := time.NewTicker(time.Millisecond * 500)
 	go func() {
-		defer clearScreen()
 		i := 1
 		dot := "."
 		fmt.Fprintf(os.Stdout, "Loading ")
@@ -69,6 +68,7 @@ func main() {
 			}
 			i++
 		}
+		clearScreen()
 	}()
 
 	flag.Parse()
