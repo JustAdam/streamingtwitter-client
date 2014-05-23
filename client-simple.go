@@ -23,13 +23,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Some keywords to track .. see the Twitter Streaming API documentation for
-	// more information
+	// Some keywords to track .. see the Twitter Streaming API documentation for more information
 	args := &url.Values{}
 	args.Add("track", "Norway")
 
 	// Launch the stream
-	go client.Stream(*streamingtwitter.Streams["Filter"], args)
+	go client.Stream(streamingtwitter.Streams["Filter"], args)
 
 	for {
 		select {

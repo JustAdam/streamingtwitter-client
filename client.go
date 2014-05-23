@@ -112,7 +112,7 @@ func main() {
 	}
 
 	wg.Add(1)
-	go client.Stream(*streamingtwitter.Streams[stream], args)
+	go client.Stream(streamingtwitter.Streams[stream], args)
 
 	// Wait for all streams to finish and then provide notification
 	done := make(chan struct{})
