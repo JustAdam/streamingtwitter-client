@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -41,7 +42,7 @@ var (
 func init() {
 	flag.StringVar(&tokenFile, "config", "tokens.json", "Token storage file location")
 	flag.StringVar(&stream, "stream", "Filter", "Type of stream to open: <Filter>, <Firehose>, <Sample>")
-	flag.StringVar(&followUsers, "follow", "", "User IDs to follow seperated by commas")
+	flag.StringVar(&followUsers, "follow", "", "Twitter users to track seperated by commas")
 	flag.StringVar(&trackKeywords, "track", "", "Keywords to track seperated by commas")
 	flag.StringVar(&location, "location", "", "Longitude and latitude keypairs to track seperated by commas")
 }
@@ -80,6 +81,18 @@ func main() {
 		return
 	}
 
+	// Helper function to create a streaming client only when necessary
+	var client *streamingtwitter.StreamClient
+	var createClient = func() {
+		// Create new streaming API client
+		client = streamingtwitter.NewClient()
+
+		// Authenicate the client and the user using the information in the tokenFile
+		if err := client.Authenticate(&tokenFile); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	// Define arguments to pass to the stream.  (Only required Filter stream options are supported currently)
 	// https://dev.twitter.com/docs/streaming-apis/parameters
 	args := &url.Values{}
@@ -91,9 +104,35 @@ func main() {
 			return
 		}
 
+		createClient()
+
 		if followUsers != "" {
-			// @todo: lookup usernames instead (https://dev.twitter.com/docs/api/1.1/get/users/lookup)
-			args.Add("follow", followUsers)
+			// To track a user, a user ID (and not screen name) must be sent to the stream.
+			// To get a user ID we need to query the relevant Twitter REST API.
+			users := &url.Values{}
+			users.Add("screen_name", followUsers)
+
+			userLookup := &streamingtwitter.TwitterStream{
+				AccessMethod: "get",
+				Url:          "https://api.twitter.com/1.1/users/lookup.json",
+			}
+
+			data := []streamingtwitter.TwitterUser{}
+			go client.Rest(userLookup, users, &data)
+
+			select {
+			case <-client.Errors:
+				log.Fatalf("User %v doesn't exist", followUsers)
+			case <-client.Finished:
+				break
+			}
+
+			ids := []string{}
+			for _, o := range data {
+				ids = append(ids, o.Id)
+			}
+
+			args.Add("follow", strings.Join(ids, ","))
 		}
 		if trackKeywords != "" {
 			args.Add("track", trackKeywords)
@@ -101,14 +140,8 @@ func main() {
 		if location != "" {
 			args.Add("locations", location)
 		}
-	}
-
-	// Create new streaming API client
-	client := streamingtwitter.NewClient()
-
-	// Authenicate the client and the user using the information in the tokenFile
-	if err := client.Authenticate(&tokenFile); err != nil {
-		log.Fatal(err)
+	} else {
+		createClient()
 	}
 
 	wg.Add(1)
