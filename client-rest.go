@@ -34,7 +34,12 @@ func main() {
 	}
 
 	data := []streamingtwitter.TwitterUser{}
-	client.Rest(userLookup, args, &data)
+	go client.Rest(userLookup, args, &data)
 
-	fmt.Printf("%+v", data)
+	select {
+	case err := <-client.Errors:
+		log.Fatal(err)
+	case <-client.Finished:
+		fmt.Printf("%+v", data)
+	}
 }
