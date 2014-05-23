@@ -10,3 +10,4 @@ install:
 script:
   - go build client.go
   - go build client-simple.go
+  - go build client-rest.go
