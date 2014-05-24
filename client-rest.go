@@ -28,7 +28,7 @@ func main() {
 	args := &url.Values{}
 	args.Add("screen_name", "stephenfry,mashable")
 
-	userLookup := &streamingtwitter.TwitterStream{
+	userLookup := &streamingtwitter.TwitterApiUrl{
 		AccessMethod: "get",
 		Url:          "https://api.twitter.com/1.1/users/lookup.json",
 	}

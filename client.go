@@ -112,7 +112,7 @@ func main() {
 			users := &url.Values{}
 			users.Add("screen_name", followUsers)
 
-			userLookup := &streamingtwitter.TwitterStream{
+			userLookup := &streamingtwitter.TwitterApiUrl{
 				AccessMethod: "get",
 				Url:          "https://api.twitter.com/1.1/users/lookup.json",
 			}
