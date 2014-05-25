@@ -121,8 +121,14 @@ func main() {
 			go client.Rest(userLookup, users, &data)
 
 			select {
-			case <-client.Errors:
-				log.Fatalf("User %v doesn't exist", followUsers)
+			case err := <-client.Errors:
+				ticker.Stop()
+				clearScreen()
+				if rerr, ok := err.(*streamingtwitter.TwitterError); ok && rerr.Id == 404 {
+					log.Fatalf("User %v doesn't exist", followUsers)
+				} else {
+					log.Fatal(err)
+				}
 			case <-client.Finished:
 				break
 			}
