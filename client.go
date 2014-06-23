@@ -112,9 +112,9 @@ func main() {
 			users := &url.Values{}
 			users.Add("screen_name", followUsers)
 
-			userLookup := &streamingtwitter.TwitterApiUrl{
+			userLookup := &streamingtwitter.TwitterAPIURL{
 				AccessMethod: "get",
-				Url:          "https://api.twitter.com/1.1/users/lookup.json",
+				URL:          "https://api.twitter.com/1.1/users/lookup.json",
 			}
 
 			data := []streamingtwitter.TwitterUser{}
@@ -124,7 +124,7 @@ func main() {
 			case err := <-client.Errors:
 				ticker.Stop()
 				clearScreen()
-				if rerr, ok := err.(*streamingtwitter.TwitterError); ok && rerr.Id == 404 {
+				if rerr, ok := err.(*streamingtwitter.TwitterError); ok && rerr.ID == 404 {
 					log.Fatalf("User %v doesn't exist", followUsers)
 				} else {
 					log.Fatal(err)
@@ -135,7 +135,7 @@ func main() {
 
 			ids := []string{}
 			for _, o := range data {
-				ids = append(ids, o.Id)
+				ids = append(ids, o.ID)
 			}
 
 			args.Add("follow", strings.Join(ids, ","))
