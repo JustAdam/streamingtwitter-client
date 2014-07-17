@@ -124,7 +124,7 @@ func main() {
 			case err := <-client.Errors:
 				ticker.Stop()
 				clearScreen()
-				if rerr, ok := err.(*streamingtwitter.TwitterError); ok && rerr.ID == 404 {
+				if err.(*streamingtwitter.TwitterError).ID == 404 {
 					log.Fatalf("User %v doesn't exist", followUsers)
 				} else {
 					log.Fatal(err)
