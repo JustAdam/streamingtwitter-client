@@ -28,12 +28,13 @@ func main() {
 	args.Add("track", "Norway")
 
 	// Launch the stream
-	go client.Stream(streamingtwitter.Streams["Filter"], args)
+  tweets := make(chan *streamingtwitter.TwitterStatus)
+	go client.Stream(tweets, streamingtwitter.Streams["Filter"], args)
 
 	for {
 		select {
 		// Recieve tweets
-		case status := <-client.Tweets:
+		case status := <-tweets:
 			fmt.Println(status)
 			// Any errors that occured
 		case err := <-client.Errors:

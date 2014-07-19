@@ -151,7 +151,8 @@ func main() {
 	}
 
 	wg.Add(1)
-	go client.Stream(streamingtwitter.Streams[stream], args)
+  tweets := make(chan *streamingtwitter.TwitterStatus)
+	go client.Stream(tweets, streamingtwitter.Streams[stream], args)
 
 	// Wait for all streams to finish and then provide notification
 	done := make(chan struct{})
@@ -214,7 +215,7 @@ func main() {
 	// Business end
 	for {
 		select {
-		case status := <-client.Tweets:
+		case status := <-tweets:
 			if loaded == false {
 				loaded = true
 				ticker.Stop()
