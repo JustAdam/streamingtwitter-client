@@ -118,7 +118,7 @@ func main() {
 			}
 
 			data := []streamingtwitter.TwitterUser{}
-			go client.Rest(userLookup, users, &data)
+			go client.Rest(&data, userLookup, users)
 
 			select {
 			case err := <-client.Errors:
@@ -151,7 +151,7 @@ func main() {
 	}
 
 	wg.Add(1)
-  tweets := make(chan *streamingtwitter.TwitterStatus)
+	tweets := make(chan *streamingtwitter.TwitterStatus)
 	go client.Stream(tweets, streamingtwitter.Streams[stream], args)
 
 	// Wait for all streams to finish and then provide notification
