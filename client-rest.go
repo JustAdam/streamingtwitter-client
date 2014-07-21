@@ -34,7 +34,7 @@ func main() {
 	}
 
 	data := []streamingtwitter.TwitterUser{}
-	go client.Rest(userLookup, args, &data)
+	go client.Rest(&data, userLookup, args)
 
 	select {
 	case err := <-client.Errors:
